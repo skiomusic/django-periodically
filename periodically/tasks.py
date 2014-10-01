@@ -4,7 +4,7 @@ class PeriodicTask(object):
     
     @property
     def task_id(self):
-        return '%s.%s' % (self.__module__, self.__name__)
+        return '%s.%s' % (self.__module__, self.__class__.__name__)
 
     def run(self):
         raise RuntimeError('This method must be overridden by your class.')
