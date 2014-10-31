@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 from ... import register as task_scheduler
 from optparse import make_option
 from ...utils import get_scheduler_backends_in_groups
@@ -39,17 +40,18 @@ class Command(BaseCommand):
         ),
     )
 
+    @transaction.atomic
     def handle(self, *args, **options):
         task_ids = args
         backend_groups = options.get('backend_groups', None)
         fake = options['fake']
         force_execution = options['force_execution']
-        
+
         if backend_groups:
             backends = get_scheduler_backends_in_groups(backend_groups)
         else:
             backends = task_scheduler.backends
-        
+
         for backend in backends:
             if task_ids:
                 tasks = set([task for task in backend.tasks if task.task_id in task_ids])
